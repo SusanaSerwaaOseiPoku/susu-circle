@@ -1,8 +1,17 @@
 :root {
   color-scheme: light;
   font-family: "Segoe UI", Arial, sans-serif;
-  color: #172a27;
-  background: #f3f6f1;
+  --ink: #3b2a24;
+  --page: #fff8f4;
+  --brand: #a65339;
+  --brand-dark: #84402d;
+  --brand-soft: #ffe2d4;
+  --muted: #786860;
+  --border: #ead8ce;
+  --border-strong: #ddc4b7;
+  --surface-soft: #fffaf7;
+  color: var(--ink);
+  background: var(--page);
   font-synthesis: none;
 }
 
@@ -25,7 +34,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  background: #123c35;
+  background: var(--brand);
   color: #fff;
 }
 
@@ -46,13 +55,13 @@ body {
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  background: #d3ecbd;
-  color: #123c35;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
   font-weight: 800;
 }
 
 .tagline {
-  color: #d5e5dc;
+  color: #ffede5;
   font-size: 0.9rem;
 }
 
@@ -84,7 +93,7 @@ h3 {
 
 .eyebrow {
   margin-bottom: 8px;
-  color: #3c7565;
+  color: #a65339;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -92,16 +101,16 @@ h3 {
 
 .muted,
 .field-help {
-  color: #60716c;
+  color: var(--muted);
 }
 
 .auth-panel,
 .card {
   padding: 24px;
-  border: 1px solid #dce5df;
+  border: 1px solid var(--border);
   border-radius: 16px;
   background: #fff;
-  box-shadow: 0 8px 26px rgb(18 60 53 / 5%);
+  box-shadow: 0 8px 26px rgb(112 63 45 / 6%);
 }
 
 .auth-panel {
@@ -125,7 +134,7 @@ select {
   width: 100%;
   min-height: 42px;
   padding: 9px 11px;
-  border: 1px solid #c9d6cf;
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   background: #fff;
   color: inherit;
@@ -134,8 +143,8 @@ select {
 
 input:focus,
 select:focus {
-  border-color: #3c7565;
-  outline: 3px solid rgb(60 117 101 / 17%);
+  border-color: #b96749;
+  outline: 3px solid rgb(185 103 73 / 18%);
 }
 
 input[aria-invalid="true"],
@@ -162,9 +171,9 @@ button {
   width: fit-content;
   min-height: 40px;
   padding: 9px 14px;
-  border: 1px solid #123c35;
+  border: 1px solid var(--brand);
   border-radius: 8px;
-  background: #123c35;
+  background: var(--brand);
   color: #fff;
   cursor: pointer;
   font: inherit;
@@ -172,7 +181,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: #205a4e;
+  background: var(--brand-dark);
 }
 
 button:disabled {
@@ -181,13 +190,13 @@ button:disabled {
 }
 
 .button-secondary {
-  border-color: #c6d5cd;
+  border-color: var(--border-strong);
   background: #fff;
-  color: #24483f;
+  color: #754331;
 }
 
 .button-secondary:hover:not(:disabled) {
-  background: #edf4ef;
+  background: #fff0e8;
 }
 
 .text-button {
@@ -195,7 +204,7 @@ button:disabled {
   padding: 4px 0;
   border: 0;
   background: transparent;
-  color: #276654;
+  color: #9d4c34;
 }
 
 .text-button:hover:not(:disabled) {
@@ -211,7 +220,7 @@ button:disabled {
 .status {
   min-height: 1.4em;
   margin-bottom: 10px;
-  color: #236043;
+  color: #8d4a32;
 }
 
 .status.error {
@@ -232,6 +241,13 @@ button:disabled {
 
 .welcome-row {
   margin-bottom: 22px;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.welcome-row .button-secondary {
+  margin-top: 4px;
 }
 
 .welcome-row h1,
@@ -273,7 +289,7 @@ button:disabled {
   gap: 3px;
   padding: 10px;
   border-radius: 8px;
-  background: #f3f7f3;
+  background: #fff2eb;
 }
 
 .group-link {
@@ -282,22 +298,22 @@ button:disabled {
   padding: 4px;
   border: 0;
   background: transparent;
-  color: #163f36;
+  color: #704333;
   text-align: left;
 }
 
 .group-link:hover:not(:disabled) {
-  background: #e3eee6;
+  background: #ffe5d9;
 }
 
 .group-link[aria-current="true"] {
-  color: #146448;
+  color: #9f4b32;
   font-weight: 800;
 }
 
 .group-meta {
   padding-left: 4px;
-  color: #60716c;
+  color: var(--muted);
   font-size: 0.78rem;
 }
 
@@ -322,9 +338,9 @@ button:disabled {
   display: grid;
   gap: 4px;
   padding: 10px 14px;
-  border: 1px dashed #a9beb1;
+  border: 1px dashed #ddb8a5;
   border-radius: 9px;
-  background: #f7faf6;
+  background: var(--surface-soft);
 }
 
 .invite-code strong {
@@ -342,9 +358,9 @@ button:disabled {
 .summary-card,
 .detail-card {
   padding: 14px;
-  border: 1px solid #e0e8e2;
+  border: 1px solid #ecded6;
   border-radius: 10px;
-  background: #fbfcfa;
+  background: var(--surface-soft);
 }
 
 .summary-card {
@@ -404,15 +420,15 @@ button:disabled {
 .badge {
   padding: 3px 8px;
   border-radius: 999px;
-  background: #e9eee9;
-  color: #46564f;
+  background: #f2e8e2;
+  color: #6f5c52;
   font-size: 0.75rem;
   text-transform: capitalize;
 }
 
 .badge-next {
-  background: #d9edc9;
-  color: #25562b;
+  background: #ffe0d1;
+  color: #8d412c;
 }
 
 .badge-paid {
@@ -425,12 +441,12 @@ button:disabled {
 }
 
 .payout-event {
-  color: #276654;
+  color: #9d4c34;
 }
 
 footer {
   padding: 18px;
-  color: #60716c;
+  color: var(--muted);
   font-size: 0.82rem;
   text-align: center;
 }
