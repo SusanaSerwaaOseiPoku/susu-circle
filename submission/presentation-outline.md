@@ -1,8 +1,8 @@
-# Five-minute demo script
+# Five-minute presentation outline
 
 Use the local app until a public deployment is available. Replace the local URL with the verified live URL before presenting the final submission. Create two test accounts yourself before the timed run; do not use real member data.
 
-| Time      | Demo                                                                                                                                                                                |
+| Time      | Activity                                                                                                                                                                            |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0:00–0:30 | Introduce Susu Circle: it helps a group organize contributions and payout turns; it records activity but does not move money.                                                       |
 | 0:30–1:10 | Log in as Account A. Show the dashboard and create a circle with a clear name and a small whole-number contribution amount.                                                         |
@@ -32,4 +32,4 @@ Answer each in under 30 seconds, then verify the answer by pointing to the relev
 
 ## After the rehearsal
 
-Ask your partner to write one thing that went well and one thing to improve. Swap roles, then fix your weakest point and run the demo a second time. Add the partner's actual feedback, recording, and any final demo adjustments yourself; do not invent them in advance.
+Ask your partner to write one thing that went well and one thing to improve. Swap roles, then fix your weakest point and rehearse again. Add the partner's actual feedback, recording, and any final changes yourself; do not invent them in advance.

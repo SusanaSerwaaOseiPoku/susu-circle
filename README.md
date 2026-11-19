@@ -1,6 +1,6 @@
 # Susu Circle - Milestone 1 and Forms
 
-The form evidence below was captured from a local run using a throwaway demo account. It is not a screenshot of a deployed site.
+The form evidence below was captured locally using a test account. It is not a screenshot of a deployed site.
 
 ## Five answers for a new reader
 
@@ -12,12 +12,16 @@ The form evidence below was captured from a local run using a throwaway demo acc
 
 ## Links and current status
 
-- GitHub repository: https://github.com/SusanaSerwaaOseiPoku/code-quality-exercise-2
-- GitHub checks: [workflow runs](https://github.com/SusanaSerwaaOseiPoku/code-quality-exercise-2/actions)
+- GitHub repository: https://github.com/SusanaSerwaaOseiPoku/susu-circle
+- GitHub checks: [workflow runs](https://github.com/SusanaSerwaaOseiPoku/susu-circle/actions)
 - Live site: **Pending deployment**
 - Live API health URL: **Pending deployment** (`/health`)
 
 The dashboard screenshot above is from a local run, not a live site. Do not present a localhost URL as the public link. Deployment needs a host with HTTPS and persistent storage for SQLite. The app has no separate client environment file: the static client is served by the same Express server and calls same-origin `/api` routes.
+
+## React Context and Hooks exercise
+
+The React implementation is in [`contexts-and-hooks/`](contexts-and-hooks/). `useFetch` loads `public/groups.json` only when there are no saved groups, `useLocalStorage` reads and persists the groups, and `useGroups` gives any descendant access to the `GroupsContext` while throwing a clear error if it is used outside `GroupsProvider`. The provider owns group state and the create, paid-toggle, member, and contribution actions; components read those actions directly instead of receiving group data through props. `Header` uses `useGroups` to calculate the total collected. To run this exercise, use `npm ci`, `npm run dev`, `npm test`, and `npm run build` from `contexts-and-hooks/`.
 
 ## Numbered setup: server
 
@@ -58,7 +62,7 @@ Requirements: Node.js 20 or newer and npm.
 ## Numbered setup: client, initial data, and tests
 
 1. The browser client is in `public/`. There is no separate client build or server; Express serves it at `http://localhost:3000/`.
-2. A fresh database creates its schema automatically on first startup. There is intentionally no seeded account or fixed demo password.
+2. A fresh database creates its schema automatically on first startup. There is no seeded account or preset password.
 3. Open the client, choose **Sign up**, and create two rehearsal accounts with non-sensitive addresses such as `owner@example.test` and `member@example.test`.
 4. As the first account, create a circle with its contribution amount, frequency, and start date. Sign in as the second account in another browser/private window and join with the invite code. Use **Record contribution** to choose a member and record the agreed amount and date; only the owner can record for another member. Then have the owner record the payout.
 5. Run the same automated checks used by CI:
@@ -224,6 +228,6 @@ Passwords are scrypt-hashed. Session IDs are signed in the cookie and stored as 
 - [Rubric-by-rubric score template](submission/self-score.md)
 - [Fresh-clone report](submission/fresh-clone-report.md)
 - [Vibe Coding Log](submission/vibe-coding-log.md)
-- [Five-minute demo script](submission/demo-script.md)
+- [Five-minute presentation outline](submission/presentation-outline.md)
 
 The explanation is an AI draft: review it and rehearse it in your own words. The official rubric and your personal self-score were not provided, so the score template is intentionally unfilled.

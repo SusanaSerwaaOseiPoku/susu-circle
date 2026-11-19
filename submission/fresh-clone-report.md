@@ -4,7 +4,7 @@
 
 ## Steps to verify
 
-1. Clone `https://github.com/SusanaSerwaaOseiPoku/code-quality-exercise-2.git` into a new empty directory.
+1. Clone `https://github.com/SusanaSerwaaOseiPoku/susu-circle.git` into a new empty directory.
 2. Run `npm ci`.
 3. Copy `.env.example` to `.env` and replace `SESSION_SECRET` with a random value of at least 32 characters.
 4. Run `npm run typecheck`, `npm test`, `npm run lint`, `npm run build`, and `npm audit`.
