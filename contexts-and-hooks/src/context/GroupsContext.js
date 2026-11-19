@@ -1,4 +1,10 @@
-import { createContext, useCallback, useEffect, useMemo } from "react";
+import {
+  createContext,
+  createElement,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import { useFetch } from "../hooks/useFetch.js";
 import { useLocalStorage } from "../hooks/useLocalStorage.js";
 import {
@@ -107,7 +113,5 @@ export function GroupsProvider({ children }) {
     ],
   );
 
-  return (
-    <GroupsContext.Provider value={value}>{children}</GroupsContext.Provider>
-  );
+  return createElement(GroupsContext.Provider, { value }, children);
 }

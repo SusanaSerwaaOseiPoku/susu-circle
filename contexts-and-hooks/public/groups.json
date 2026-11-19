@@ -14,6 +14,7 @@
       {
         "id": "market-ama-round-1",
         "memberId": "ama",
+        "memberName": "Ama",
         "amount": 50,
         "date": "2026-11-15",
         "round": 1

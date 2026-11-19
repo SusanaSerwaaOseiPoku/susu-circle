@@ -55,7 +55,8 @@ test("adds and removes a member with their contribution history", () => {
   );
   const withoutMember = removeMember(withContribution, "circle-1", "esi");
   assert.equal(withoutMember[0].members.length, 1);
-  assert.deepEqual(withoutMember[0].contributions, []);
+  assert.equal(withoutMember[0].contributions.length, 1);
+  assert.equal(withoutMember[0].contributions[0].memberName, "Esi");
 });
 
 test("toggle paid creates and removes the current-round contribution", () => {

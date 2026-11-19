@@ -31,18 +31,19 @@ function updateGroup(groups, groupId, update) {
 }
 
 export function createGroup(groups, details, id = createId()) {
-  const name = details.name.trim();
-  const contributionAmount = Number(details.contributionAmount);
+  const input = details && typeof details === "object" ? details : {};
+  const name = typeof input.name === "string" ? input.name.trim() : "";
+  const contributionAmount = Number(input.contributionAmount);
   if (name.length < 3 || name.length > 60) {
     throw new Error("Group name must be 3 to 60 characters.");
   }
   if (!Number.isSafeInteger(contributionAmount) || contributionAmount <= 0) {
     throw new Error("Contribution amount must be a positive whole number.");
   }
-  if (!["weekly", "monthly"].includes(details.frequency)) {
+  if (!["weekly", "monthly"].includes(input.frequency)) {
     throw new Error("Choose a weekly or monthly frequency.");
   }
-  if (!isDateOnly(details.startDate)) {
+  if (!isDateOnly(input.startDate)) {
     throw new Error("Choose a valid start date.");
   }
 
@@ -52,8 +53,8 @@ export function createGroup(groups, details, id = createId()) {
       id,
       name,
       contributionAmount,
-      frequency: details.frequency,
-      startDate: details.startDate,
+      frequency: input.frequency,
+      startDate: input.startDate,
       currentRound: 1,
       members: [],
       contributions: [],
@@ -62,7 +63,7 @@ export function createGroup(groups, details, id = createId()) {
 }
 
 export function addMember(groups, groupId, name, memberId = createId()) {
-  const cleanName = name.trim();
+  const cleanName = typeof name === "string" ? name.trim() : "";
   if (cleanName.length < 2 || cleanName.length > 60) {
     throw new Error("Member name must be 2 to 60 characters.");
   }
@@ -92,9 +93,6 @@ export function removeMember(groups, groupId, memberId) {
     return {
       ...group,
       members: group.members.filter((member) => member.id !== memberId),
-      contributions: group.contributions.filter(
-        (contribution) => contribution.memberId !== memberId,
-      ),
     };
   });
 }
@@ -141,6 +139,7 @@ export function togglePaid(
         {
           id: contributionId,
           memberId,
+          memberName: member.name,
           amount: group.contributionAmount,
           date,
           round: group.currentRound,
@@ -157,26 +156,27 @@ export function recordContribution(
   contributionId = createId(),
 ) {
   const group = getGroup(groups, groupId);
-  const member = group.members.find((entry) => entry.id === details.memberId);
+  const input = details && typeof details === "object" ? details : {};
+  const member = group.members.find((entry) => entry.id === input.memberId);
   if (!member) throw new Error("Choose a member of this group.");
 
-  const amount = Number(details.amount);
+  const amount = Number(input.amount);
   if (!Number.isSafeInteger(amount) || amount <= 0) {
     throw new Error("Contribution amount must be a positive whole number.");
   }
   if (amount !== group.contributionAmount) {
     throw new Error(`Contribution must match the agreed amount of ${group.contributionAmount}.`);
   }
-  if (!isDateOnly(details.date)) {
+  if (!isDateOnly(input.date)) {
     throw new Error("Choose a valid contribution date.");
   }
-  if (details.date > todayDateOnly()) {
+  if (input.date > todayDateOnly()) {
     throw new Error("Contribution date cannot be in the future.");
   }
   if (
     group.contributions.some(
       (contribution) =>
-        contribution.memberId === details.memberId &&
+        contribution.memberId === input.memberId &&
         contribution.round === group.currentRound,
     )
   ) {
@@ -186,15 +186,16 @@ export function recordContribution(
   return updateGroup(groups, groupId, (currentGroup) => ({
     ...currentGroup,
     members: currentGroup.members.map((entry) =>
-      entry.id === details.memberId ? { ...entry, paid: true } : entry,
+      entry.id === input.memberId ? { ...entry, paid: true } : entry,
     ),
     contributions: [
       ...currentGroup.contributions,
       {
         id: contributionId,
-        memberId: details.memberId,
+        memberId: input.memberId,
+        memberName: member.name,
         amount,
-        date: details.date,
+        date: input.date,
         round: currentGroup.currentRound,
       },
     ],
