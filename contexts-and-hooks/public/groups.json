@@ -1,0 +1,36 @@
+[
+  {
+    "id": "market-circle",
+    "name": "Market Women Circle",
+    "contributionAmount": 50,
+    "frequency": "weekly",
+    "startDate": "2026-11-01",
+    "currentRound": 1,
+    "members": [
+      { "id": "ama", "name": "Ama", "paid": true },
+      { "id": "esi", "name": "Esi", "paid": false }
+    ],
+    "contributions": [
+      {
+        "id": "market-ama-round-1",
+        "memberId": "ama",
+        "amount": 50,
+        "date": "2026-11-15",
+        "round": 1
+      }
+    ]
+  },
+  {
+    "id": "school-circle",
+    "name": "School Friends",
+    "contributionAmount": 25,
+    "frequency": "monthly",
+    "startDate": "2026-11-01",
+    "currentRound": 1,
+    "members": [
+      { "id": "kojo", "name": "Kojo", "paid": false },
+      { "id": "abena", "name": "Abena", "paid": false }
+    ],
+    "contributions": []
+  }
+]
