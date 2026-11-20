@@ -24,7 +24,8 @@ The dashboard screenshot above is from a local run, not a live site. Do not pres
 The React app is in [`contexts-and-hooks/`](contexts-and-hooks/). It loads
 groups, members, and contributions from `db.json` using json-server. Follow
 [`contexts-and-hooks/README.md`](contexts-and-hooks/README.md) to start the API
-and app in separate terminals.
+and app in separate terminals. The group page also shows the payout order; see
+[`docs/log-01.md`](docs/log-01.md) for the prompt, explanation, tests, and notes.
 
 ## Numbered setup: server
 

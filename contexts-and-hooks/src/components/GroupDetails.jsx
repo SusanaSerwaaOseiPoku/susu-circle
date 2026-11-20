@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGroups } from "../hooks/useGroups.js";
+import { getPayoutOrder } from "../state/payoutOrder.js";
 
 function todayDateOnly() {
   return new Date().toISOString().slice(0, 10);
@@ -238,6 +239,39 @@ function GroupActivity({ groupId }) {
   );
 }
 
+function PayoutOrder({ groupId }) {
+  const { groups } = useGroups();
+  const group = groups.find((entry) => entry.id === groupId);
+  if (!group) return null;
+
+  const payoutOrder = getPayoutOrder(group.members);
+
+  return (
+    <section className="detail-card">
+      <h3>Payout order</h3>
+      {payoutOrder.length === 0 ? (
+        <p className="muted">No members in the payout order yet.</p>
+      ) : (
+        <ol className="payout-order-list">
+          {payoutOrder.map((member) => (
+            <li key={member.id}>
+              <span className="payout-order-position">
+                {member.position}
+              </span>
+              <div>
+                <strong>{member.name}</strong>
+                <span className="payout-order-label">
+                  {member.position === 1 ? "Next payout" : "Later payout"}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  );
+}
+
 export default function GroupDetails({ groupId }) {
   const { groups, deleteGroup, ready, saving } = useGroups();
   const [deleteError, setDeleteError] = useState("");
@@ -311,6 +345,7 @@ export default function GroupDetails({ groupId }) {
           <h3>Record contribution</h3>
           <ContributionForm key={groupId} groupId={groupId} />
         </section>
+        <PayoutOrder groupId={groupId} />
         <GroupActivity groupId={groupId} />
       </div>
     </section>
