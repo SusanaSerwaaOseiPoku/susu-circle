@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { api } from "../api.js";
 
 export function useFetch(url, { enabled = true } = {}) {
   const [result, setResult] = useState({
@@ -6,6 +7,7 @@ export function useFetch(url, { enabled = true } = {}) {
     loading: enabled,
     error: null,
   });
+  const [requestNumber, setRequestNumber] = useState(0);
 
   useEffect(() => {
     if (!enabled) {
@@ -14,32 +16,34 @@ export function useFetch(url, { enabled = true } = {}) {
     }
 
     const controller = new AbortController();
-    setResult({ data: null, loading: true, error: null });
+    setResult((current) => ({ ...current, loading: true, error: null }));
 
     async function load() {
       try {
-        const response = await fetch(url, { signal: controller.signal });
-        if (!response.ok) {
-          throw new Error(`Could not load starter groups (${response.status}).`);
-        }
-        const data = await response.json();
+        const response = await api.get(url, { signal: controller.signal });
+        const data = response.data;
         if (!Array.isArray(data)) {
-          throw new Error("Starter groups must be a JSON array.");
+          throw new Error(`Expected an array from ${url}.`);
         }
         setResult({ data, loading: false, error: null });
       } catch (error) {
         if (controller.signal.aborted) return;
-        setResult({
-          data: null,
+        setResult((current) => ({
+          ...current,
           loading: false,
-          error: error instanceof Error ? error.message : String(error),
-        });
+          error: `Could not load ${url}: ${error.message}`,
+        }));
       }
     }
 
     load();
     return () => controller.abort();
-  }, [enabled, url]);
+  }, [enabled, requestNumber, url]);
 
-  return result;
+  const reload = useCallback(
+    () => setRequestNumber((current) => current + 1),
+    [],
+  );
+
+  return { ...result, reload };
 }

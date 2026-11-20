@@ -15,7 +15,7 @@ function initialValues() {
 }
 
 export default function CreateGroupForm({ onCreated }) {
-  const { createGroup } = useGroups();
+  const { createGroup, saving, ready } = useGroups();
   const [values, setValues] = useState(initialValues);
   const [error, setError] = useState("");
 
@@ -27,10 +27,10 @@ export default function CreateGroupForm({ onCreated }) {
     setError("");
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const groupId = createGroup(values);
+      const groupId = await createGroup(values);
       setValues(initialValues());
       setError("");
       onCreated(groupId);
@@ -88,7 +88,9 @@ export default function CreateGroupForm({ onCreated }) {
           />
         </label>
         {error && <p className="field-error" role="alert">{error}</p>}
-        <button type="submit">Create group</button>
+        <button type="submit" disabled={!ready || saving}>
+          Create group
+        </button>
       </form>
     </section>
   );

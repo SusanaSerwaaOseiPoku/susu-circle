@@ -97,54 +97,16 @@ export function removeMember(groups, groupId, memberId) {
   });
 }
 
-export function togglePaid(
-  groups,
-  groupId,
-  memberId,
-  contributionId = createId(),
-  date = todayDateOnly(),
-) {
+export function togglePaid(groups, groupId, memberId) {
   return updateGroup(groups, groupId, (group) => {
     const member = group.members.find((entry) => entry.id === memberId);
     if (!member) throw new Error("Member not found.");
 
-    const alreadyPaid = group.contributions.some(
-      (contribution) =>
-        contribution.memberId === memberId &&
-        contribution.round === group.currentRound,
-    );
-    const contributions = group.contributions.filter(
-      (contribution) =>
-        contribution.memberId !== memberId ||
-        contribution.round !== group.currentRound,
-    );
-
-    if (member.paid || alreadyPaid) {
-      return {
-        ...group,
-        members: group.members.map((entry) =>
-          entry.id === memberId ? { ...entry, paid: false } : entry,
-        ),
-        contributions,
-      };
-    }
-
     return {
       ...group,
       members: group.members.map((entry) =>
-        entry.id === memberId ? { ...entry, paid: true } : entry,
+        entry.id === memberId ? { ...entry, paid: !member.paid } : entry,
       ),
-      contributions: [
-        ...contributions,
-        {
-          id: contributionId,
-          memberId,
-          memberName: member.name,
-          amount: group.contributionAmount,
-          date,
-          round: group.currentRound,
-        },
-      ],
     };
   });
 }

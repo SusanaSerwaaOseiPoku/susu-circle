@@ -7,7 +7,15 @@ import { useGroups } from "./hooks/useGroups.js";
 import "./App.css";
 
 export default function App() {
-  const { groups, loading, error } = useGroups();
+  const {
+    groups,
+    loading,
+    error,
+    retryLoad,
+    saving,
+    saveMessage,
+    saveError,
+  } = useGroups();
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
@@ -32,12 +40,30 @@ export default function App() {
 
         {loading && (
           <p className="notice" role="status">
-            Loading starter groups…
+            Loading groups, members, and contributions…
           </p>
         )}
         {error && (
+          <div className="notice error-notice" role="alert">
+            <p>{error}</p>
+            <button type="button" className="button-secondary" onClick={retryLoad}>
+              Retry loading
+            </button>
+          </div>
+        )}
+        {saving && (
+          <p className="notice" role="status">
+            {saveMessage}
+          </p>
+        )}
+        {!saving && saveMessage && (
+          <p className="notice success-notice" role="status">
+            {saveMessage}
+          </p>
+        )}
+        {saveError && (
           <p className="notice error-notice" role="alert">
-            {error}
+            {saveError}
           </p>
         )}
 

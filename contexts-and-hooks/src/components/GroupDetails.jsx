@@ -6,15 +6,15 @@ function todayDateOnly() {
 }
 
 function MemberRow({ groupId, memberId }) {
-  const { groups, togglePaid, removeMember } = useGroups();
+  const { groups, togglePaid, removeMember, saving, ready } = useGroups();
   const group = groups.find((entry) => entry.id === groupId);
   const member = group?.members.find((entry) => entry.id === memberId);
   const [error, setError] = useState("");
   if (!group || !member) return null;
 
-  function runAction(action) {
+  async function runAction(action) {
     try {
-      action();
+      await action();
       setError("");
     } catch (actionError) {
       setError(actionError.message);
@@ -33,6 +33,7 @@ function MemberRow({ groupId, memberId }) {
         <button
           className="button-secondary"
           type="button"
+          disabled={!ready || saving}
           onClick={() =>
             runAction(() => togglePaid(groupId, memberId))
           }
@@ -42,6 +43,7 @@ function MemberRow({ groupId, memberId }) {
         <button
           className="text-button"
           type="button"
+          disabled={!ready || saving}
           onClick={() =>
             runAction(() => removeMember(groupId, memberId))
           }
@@ -55,14 +57,14 @@ function MemberRow({ groupId, memberId }) {
 }
 
 function AddMemberForm({ groupId }) {
-  const { addMember } = useGroups();
+  const { addMember, saving, ready } = useGroups();
   const [name, setName] = useState("");
   const [error, setError] = useState("");
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     try {
-      addMember(groupId, name);
+      await addMember(groupId, name);
       setName("");
       setError("");
     } catch (submitError) {
@@ -87,14 +89,16 @@ function AddMemberForm({ groupId }) {
         maxLength={60}
         required
       />
-      <button type="submit">Add member</button>
+      <button type="submit" disabled={!ready || saving}>
+        Add member
+      </button>
       {error && <p className="field-error" role="alert">{error}</p>}
     </form>
   );
 }
 
 function ContributionForm({ groupId }) {
-  const { groups, recordContribution } = useGroups();
+  const { groups, recordContribution, saving, ready } = useGroups();
   const group = groups.find((entry) => entry.id === groupId);
   const [memberId, setMemberId] = useState("");
   const [amount, setAmount] = useState("");
@@ -119,10 +123,10 @@ function ContributionForm({ groupId }) {
     ? memberId
     : eligibleMembers[0].id;
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     try {
-      recordContribution(groupId, {
+      await recordContribution(groupId, {
         memberId: selectedMemberId,
         amount,
         date,
@@ -172,7 +176,9 @@ function ContributionForm({ groupId }) {
         />
       </label>
       {error && <p className="field-error" role="alert">{error}</p>}
-      <button type="submit">Record contribution</button>
+      <button type="submit" disabled={!ready || saving}>
+        Record contribution
+      </button>
     </form>
   );
 }
@@ -233,9 +239,19 @@ function GroupActivity({ groupId }) {
 }
 
 export default function GroupDetails({ groupId }) {
-  const { groups } = useGroups();
+  const { groups, deleteGroup, ready, saving } = useGroups();
+  const [deleteError, setDeleteError] = useState("");
   const group = groups.find((entry) => entry.id === groupId);
   if (!group) return null;
+
+  async function handleDeleteGroup() {
+    try {
+      await deleteGroup(groupId);
+      setDeleteError("");
+    } catch (requestError) {
+      setDeleteError(requestError.message);
+    }
+  }
 
   return (
     <section className="group-detail card">
@@ -251,8 +267,21 @@ export default function GroupDetails({ groupId }) {
         <div className="invite-code">
           <span>Current round</span>
           <strong>{group.currentRound}</strong>
+          <button
+            className="button-danger"
+            type="button"
+            disabled={!ready || saving}
+            onClick={handleDeleteGroup}
+          >
+            Delete group
+          </button>
         </div>
       </div>
+      {deleteError && (
+        <p className="field-error" role="alert">
+          {deleteError}
+        </p>
+      )}
 
       <div className="summary-grid">
         <div className="summary-card">

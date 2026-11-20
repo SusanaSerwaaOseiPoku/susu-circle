@@ -155,6 +155,11 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .button-secondary {
   border-color: var(--border-strong);
   background: #fff;
@@ -176,6 +181,16 @@ button:focus-visible {
   background: var(--peach-tint);
 }
 
+.button-danger {
+  margin-top: 8px;
+  border-color: #9c3d31;
+  background: #9c3d31;
+}
+
+.button-danger:hover {
+  background: #762c24;
+}
+
 .field-error {
   margin: 0;
   color: #a22d2d;
@@ -192,6 +207,12 @@ button:focus-visible {
 .error-notice {
   border-color: #e7aaa1;
   color: #8d2923;
+}
+
+.success-notice {
+  border-color: #b7d5b9;
+  background: #f0f8ef;
+  color: #315d34;
 }
 
 .section-heading,

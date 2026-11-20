@@ -59,14 +59,20 @@ test("adds and removes a member with their contribution history", () => {
   assert.equal(withoutMember[0].contributions[0].memberName, "Esi");
 });
 
-test("toggle paid creates and removes the current-round contribution", () => {
-  const paid = togglePaid(groups, "circle-1", "ama", "c-1", "2026-11-19");
-  assert.equal(paid[0].members[0].paid, true);
-  assert.equal(paid[0].contributions[0].amount, 50);
-
-  const unpaid = togglePaid(paid, "circle-1", "ama", "c-2", "2026-11-19");
+test("toggle paid changes member status without changing contribution history", () => {
+  const recorded = recordContribution(
+    groups,
+    "circle-1",
+    { memberId: "ama", amount: 50, date: "2026-11-10" },
+    "c-1",
+  );
+  const unpaid = togglePaid(recorded, "circle-1", "ama");
   assert.equal(unpaid[0].members[0].paid, false);
-  assert.deepEqual(unpaid[0].contributions, []);
+  assert.equal(unpaid[0].contributions.length, 1);
+
+  const paid = togglePaid(unpaid, "circle-1", "ama");
+  assert.equal(paid[0].members[0].paid, true);
+  assert.equal(paid[0].contributions.length, 1);
 });
 
 test("records a contribution and rejects future or mismatched amounts", () => {
