@@ -1,6 +1,6 @@
 # Vibe Coding Log
 
-This log records AI-assisted work on the Milestone 1 project. Review it, correct anything that does not match your own experience, and add your own checks before submitting.
+This log records AI-assisted work on the Susu Circle project. Review it, correct anything that does not match your own experience, and add your own checks before submitting.
 
 ## What AI helped create or change
 
@@ -10,6 +10,7 @@ This log records AI-assisted work on the Milestone 1 project. Review it, correct
 - Added group frequency/start-date fields, a reusable `Field` component, validated group and contribution forms, and direct group detail URLs. The API validates member permissions and stores the added dates.
 - Captured local screenshots for group validation/success and contribution validation/success in `submission/evidence/`.
 - Added a React Context/Hook exercise in `contexts-and-hooks/`, with starter JSON, `GroupsContext`, shared mutation actions, and components that consume `useGroups` directly.
+- Connected the React app to json-server with Axios, `db.json`, and `useFetch` requests for groups, members, and contributions. Added server-backed create, update, and delete actions with request status messages.
 - Drafted the README, presentation outline, and submission templates. Review the drafts and add your own presentation notes and reflection.
 
 ## What was checked during development
@@ -21,6 +22,8 @@ This log records AI-assisted work on the Milestone 1 project. Review it, correct
 - Manual local browser checks for field errors, group creation and `/groups/:id` reload, future contribution-date rejection, and contribution persistence after refresh.
 - In `contexts-and-hooks/`, `npm test` passed (5 tests) and `npm run build` passed.
 - Browser-checked starter JSON loading, group/member/contribution actions, header total, and localStorage persistence after refresh.
+- In the server exercise, `npm test` passed (5 tests) and `npm run build` passed.
+- Browser-checked json-server reads, group/member/contribution requests, paid-status updates, deleting a member while keeping contribution history, deleting a group, refresh persistence, and the server-off error/retry state.
 
 These are development checks performed during implementation, not a claim that the student independently reviewed every line or completed the live-site requirements. Re-run the checks and review the screenshots before submission.
 
@@ -32,5 +35,6 @@ These are development checks performed during implementation, not a claim that t
 - Create two rehearsal accounts with non-reused passwords; never commit their credentials.
 - Read the authentication, membership, contribution, and payout code and make sure I can explain it.
 - Present with a timer, collect real partner feedback, make the weakest point better, and rehearse again.
+- Record the server exercise's create/read/update/delete workflow and add the recording to the submission.
 - Make a backup recording and verify that it plays.
 - Replace the reflection template with answers to the exact Week 23 questions in my own words.

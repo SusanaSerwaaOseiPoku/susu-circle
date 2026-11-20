@@ -19,9 +19,12 @@ The form evidence below was captured locally using a test account. It is not a s
 
 The dashboard screenshot above is from a local run, not a live site. Do not present a localhost URL as the public link. Deployment needs a host with HTTPS and persistent storage for SQLite. The app has no separate client environment file: the static client is served by the same Express server and calls same-origin `/api` routes.
 
-## React Context and Hooks exercise
+## React server exercise
 
-The React implementation is in [`contexts-and-hooks/`](contexts-and-hooks/). `useFetch` loads `public/groups.json` only when there are no saved groups, `useLocalStorage` reads and persists the groups, and `useGroups` gives any descendant access to the `GroupsContext` while throwing a clear error if it is used outside `GroupsProvider`. The provider owns group state and the create, paid-toggle, member, and contribution actions; components read those actions directly instead of receiving group data through props. `Header` uses `useGroups` to calculate the total collected. To run this exercise, use `npm ci`, `npm run dev`, `npm test`, and `npm run build` from `contexts-and-hooks/`.
+The React app is in [`contexts-and-hooks/`](contexts-and-hooks/). It loads
+groups, members, and contributions from `db.json` using json-server. Follow
+[`contexts-and-hooks/README.md`](contexts-and-hooks/README.md) to start the API
+and app in separate terminals.
 
 ## Numbered setup: server
 
