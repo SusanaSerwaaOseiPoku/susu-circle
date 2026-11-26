@@ -2,6 +2,7 @@ import "dotenv/config";
 import { fileURLToPath } from "node:url";
 import cors from "cors";
 import express from "express";
+import mongoose from "mongoose";
 import connectDB from "./config/db.js";
 import { errorHandler, notFound } from "./middleware/errors.js";
 import logger from "./middleware/logger.js";
@@ -12,17 +13,48 @@ import membersRouter from "./routes/members.js";
 
 const PORT = Number(process.env.PORT) || 3001;
 
+const DB_READY_STATES = {
+  0: "disconnected",
+  1: "connected",
+  2: "connecting",
+  3: "disconnecting",
+};
+
+export function getHealthPayload() {
+  const readyState = mongoose.connection.readyState;
+  const dbStatus = DB_READY_STATES[readyState] || "unknown";
+  const connected = readyState === 1;
+
+  return {
+    httpStatus: connected ? 200 : 503,
+    body: {
+      status: connected ? "ok" : "degraded",
+      database: {
+        status: dbStatus,
+        name: mongoose.connection.name || null,
+      },
+      uptimeSeconds: Math.round(process.uptime()),
+      timestamp: new Date().toISOString(),
+    },
+  };
+}
+
 export function getCorsOptions(clientUrl = process.env.CLIENT_URL) {
-  const allowedOrigins = typeof clientUrl === "string"
-    ? clientUrl
-        .split(",")
-        .map((origin) => origin.trim())
-        .filter(Boolean)
-    : [];
+  const allowedOrigins =
+    typeof clientUrl === "string"
+      ? clientUrl
+          .split(",")
+          .map((origin) => origin.trim())
+          .filter(Boolean)
+      : [];
 
   return {
     origin(origin, callback) {
-      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.length === 0 ||
+        allowedOrigins.includes(origin)
+      ) {
         return callback(null, true);
       }
       return callback(new Error("Origin not allowed by CORS."));
@@ -39,7 +71,8 @@ export function createApp() {
   app.use(express.json());
 
   app.get("/health", (_request, response) => {
-    response.json({ status: "ok" });
+    const { httpStatus, body } = getHealthPayload();
+    response.status(httpStatus).json(body);
   });
 
   app.use("/auth", authRouter);

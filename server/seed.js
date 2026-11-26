@@ -85,7 +85,9 @@ async function seed() {
     });
   }
 
-  console.log("Seed complete. Test login: demo@susu.test / susu1234");
+  console.log(
+    `Seed complete in database "${mongoose.connection.name}". Test login: demo@susu.test / susu1234`,
+  );
   await mongoose.disconnect();
 }
 
