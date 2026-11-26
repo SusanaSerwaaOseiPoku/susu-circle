@@ -121,6 +121,73 @@ After running `npm run seed` in `server/` (or register a brand-new account on
 6. Edit your circle, then open **School Friends Circle** (owned by `kojo@susu.test`) to show Edit/Delete buttons are hidden for non-owners (and backed by `403` on the API).
 7. Click **Log out** in the header — token is cleared and protected pages redirect back to `/login`.
 
+## Deployment (Render + MongoDB Atlas)
+
+- **Live API URL:** `https://<your-render-service>.onrender.com` *(replace with your Render URL after creating the Web Service)*
+- **Health endpoint:** `https://<your-render-service>.onrender.com/health` (returns HTTP `200` with `{ status: "ok", database: { status: "connected", name: "susu-prod" }, uptimeSeconds, timestamp }`, or `503` if MongoDB is disconnected — never exposes secrets)
+- **GitHub repository:** https://github.com/SusanaSerwaaOseiPoku/susu-circle
+
+### Render Web Service Settings
+
+This repo also includes a [render.yaml](./render.yaml) Blueprint, or you can
+configure these exact settings manually in the Render dashboard:
+
+| Setting | Value | Why |
+| --- | --- | --- |
+| **Service Type** | Web Service | Runs our long-lived Express HTTP server |
+| **Root Directory** | `server` | Points Render to the API subfolder inside this monorepo |
+| **Runtime** | Node (`>=20.0.0`, from `server/package.json` `engines`) | Ensures Render runs the same Node 20+ version tested locally |
+| **Build Command** | `npm install` | Installs Express, Mongoose, bcryptjs, jsonwebtoken, dotenv, and cors |
+| **Start Command** | `npm start` | Runs `node server.js`, calling `connectDB()` before listening on `process.env.PORT` |
+| **Health Check Path** | `/health` | Lets Render confirm both Express and MongoDB are up |
+
+### Environment Variables on Render (Values Kept Off GitHub)
+
+| Variable Name | Purpose | Production Value Guidance |
+| --- | --- | --- |
+| `NODE_ENV` | Runtime mode | `production` |
+| `MONGO_URI` | Production Atlas connection string | Use a **separate production database name** `susu-prod` (e.g. `.../susu-prod?retryWrites=true&w=majority`) — separate from local `susu-dev` |
+| `JWT_SECRET` | Signs & verifies JWT tokens | Generate a **brand-new** long random secret (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`) — never reuse your local dev secret |
+| `CLIENT_URL` | Allowed CORS frontend origin(s) | Your deployed frontend URL (or comma-separated origins) |
+
+> Render injects `PORT` automatically—do not hardcode it. Never commit `server/.env` or `client/.env`.
+
+### Seed Production Data Once (`susu-prod`)
+
+Run the idempotent seeder once against your production `MONGO_URI` (in a local
+shell with `MONGO_URI` pointing to `susu-prod`, or from Render's Shell tab):
+
+```sh
+cd server
+npm run seed
+```
+
+This creates the test user (`demo@susu.test` / `susu1234`) and sample group
+(**Market Women Circle**) in `susu-prod` and logs the seeded database name.
+
+### Live API Verification in Thunder Client
+
+Run these requests against `https://<your-render-service>.onrender.com`:
+
+1. `GET /health` → `200`, `database.status: "connected"`, `database.name: "susu-prod"`
+2. `POST /auth/register` with a new `{ name, email, password }` → `201`
+3. `POST /auth/login` with `{ email, password }` → `200` + copy `token`
+4. `POST /groups` (header `Authorization: Bearer <token>`) → `201` + copy `_id`
+5. `POST /members` (Bearer token, `{ group, name }`) → `201` + copy `_id`
+6. `POST /contributions` (Bearer token, `{ group, member, amount }`) → `201`
+7. `GET /groups/<groupId>/contributions` → `200` with populated payer name and server `totalSaved`
+
+### Deployment Checklist
+
+- [x] `PORT` from `process.env`, `start` script, and `engines` field in `server/package.json`
+- [x] Repo on GitHub with no `.env` files tracked and `.env.example` listing every variable name
+- [x] `/health` reports database status without exposing secrets
+- [x] `seed.js` seeds test user + sample group and prints the target DB name
+- [x] `render.yaml` & Deployment docs with Root Directory (`server`), Build Command, Start Command, and variable names
+- [ ] Create Render Web Service with `MONGO_URI` (`susu-prod`) and a **new** `JWT_SECRET`
+- [ ] Run `npm run seed` against `susu-prod`
+- [ ] Update the Live API URL above, test the live URL in Thunder Client, and take screenshots of `/health` and Render logs (with secrets hidden)
+
 ## Tests & Production Build
 
 ```sh

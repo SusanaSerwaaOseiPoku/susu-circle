@@ -32,3 +32,28 @@ This log records AI-assisted work combining the Susu Circle React frontend and E
 - Walk through the full 2-minute demo script (public browse → ProtectedRoute redirect → login → My Groups → New Group → add member → Add Contribution → owner Edit/Delete vs non-owner hidden buttons/403 → logout) and record my 2-minute screen recording.
 - Capture/replace `docs/screenshot.png` with a screenshot of my live seeded circles if I want my own Atlas data shown in the README screenshot.
 - Review every file in `client/` and `server/` so I can explain any file during class Q&A.
+
+---
+
+## Live Deployment Prep (Render & Production Database `susu-prod`)
+
+### What AI helped create or change
+
+- Added `"engines": { "node": ">=20.0.0" }` to `server/package.json` alongside `"start": "node server.js"` and `process.env.PORT`.
+- Upgraded `GET /health` in `server/server.js` to report live Mongoose connection status (`database.status` and `database.name`), uptime, and timestamp (`200` when connected, `503` when disconnected) without leaking any secrets or URIs.
+- Updated `server/.env.example` to document every variable name (`PORT`, `NODE_ENV`, `CLIENT_URL`, `JWT_SECRET`, `MONGO_URI`) and explain keeping dev (`susu-dev`) and production (`susu-prod`) databases separate with a new production `JWT_SECRET`.
+- Updated `server/seed.js` to log the seeded database name (`mongoose.connection.name`) so production seeding into `susu-prod` can be confirmed cleanly.
+- Added `render.yaml` (`rootDir: server`, `buildCommand: npm install`, `startCommand: npm start`, `healthCheckPath: /health`) and a complete **Deployment** section in `README.md` with the Render settings table, environment variable table, Thunder Client test flow, and deployment checklist.
+- Expanded `server/test/api.test.js` to test `package.json` `start`/`engines` and both `200` (connected) and `503` (disconnected) `/health` responses.
+
+### What was checked during development
+
+- `server`: `npm test` — verified `start` script, `engines.node`, `GET /health` database status reporting (`503` disconnected / `200` connected) with zero secrets, CORS `CLIENT_URL`, and all auth/group/member/contribution routes.
+- Verified with `git check-ignore` and `git ls-files` that no `.env` file is tracked in GitHub.
+
+### What I still need to check myself
+
+- Create the Render Web Service linked to `SusanaSerwaaOseiPoku/susu-circle` with Root Directory `server`, Build Command `npm install`, Start Command `npm start`, Health Check Path `/health`, `NODE_ENV=production`, `MONGO_URI` pointing to `/susu-prod`, a brand-new production `JWT_SECRET`, and `CLIENT_URL`.
+- Allow Render's outbound IPs (or `0.0.0.0/0`) in MongoDB Atlas Network Access so Render can connect to `susu-prod`.
+- Seed `susu-prod` once with `npm run seed`, verify `GET <live-url>/health` shows `connected` + `susu-prod`, and run the register/login/create-group/add-contribution flow in Thunder Client against the live Render URL.
+- Paste my live Render URL into `README.md` and capture screenshots of `/health` and Render logs (hiding all secrets).

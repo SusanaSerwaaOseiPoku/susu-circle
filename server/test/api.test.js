@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import { after, before, beforeEach, mock, test } from "node:test";
+import { fileURLToPath } from "node:url";
 import mongoose from "mongoose";
 import connectDB from "../config/db.js";
 import Contribution from "../models/Contribution.js";
@@ -277,9 +280,45 @@ test("models define refs (owner, group, user, member), virtual memberCount, CORS
     );
   });
 
-  const health = await request("/health");
-  assert.equal(health.response.status, 200);
-  assert.deepEqual(health.payload, { status: "ok" });
+  const pkgPath = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "../package.json",
+  );
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+  assert.equal(pkg.scripts.start, "node server.js");
+  assert.ok(pkg.engines?.node);
+
+  const degradedHealth = await request("/health");
+  assert.equal(degradedHealth.response.status, 503);
+  assert.equal(degradedHealth.payload.status, "degraded");
+  assert.equal(degradedHealth.payload.database.status, "disconnected");
+
+  const originalReadyState = Object.getOwnPropertyDescriptor(
+    mongoose.connection,
+    "readyState",
+  );
+  Object.defineProperty(mongoose.connection, "readyState", {
+    configurable: true,
+    value: 1,
+  });
+  try {
+    const healthy = await request("/health");
+    assert.equal(healthy.response.status, 200);
+    assert.equal(healthy.payload.status, "ok");
+    assert.equal(healthy.payload.database.status, "connected");
+    assert.equal(JSON.stringify(healthy.payload).includes("JWT_SECRET"), false);
+    assert.equal(JSON.stringify(healthy.payload).includes("mongodb"), false);
+  } finally {
+    if (originalReadyState) {
+      Object.defineProperty(
+        mongoose.connection,
+        "readyState",
+        originalReadyState,
+      );
+    } else {
+      delete mongoose.connection.readyState;
+    }
+  }
 
   assert.equal(Group.schema.path("owner").options.ref, "User");
   assert.ok(Group.schema.virtuals.memberCount);
