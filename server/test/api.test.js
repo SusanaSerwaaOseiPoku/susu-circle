@@ -268,10 +268,21 @@ async function request(path, { method = "GET", body, token } = {}) {
 test("models define refs (owner, group, user, member), virtual memberCount, CORS CLIENT_URL, and connectDB requires MONGO_URI", async () => {
   await assert.rejects(() => connectDB(""), /MONGO_URI/);
 
-  const corsOptions = getCorsOptions("https://app.example.com");
+  const corsOptions = getCorsOptions(
+    "https://susu-circle.vercel.app/, https://susu-circle-*.vercel.app",
+  );
   await new Promise((resolve, reject) => {
-    corsOptions.origin("https://app.example.com", (err, allowed) =>
+    corsOptions.origin("https://susu-circle.vercel.app", (err, allowed) =>
       err || !allowed ? reject(err || new Error("Expected allowed")) : resolve(),
+    );
+  });
+  await new Promise((resolve, reject) => {
+    corsOptions.origin(
+      "https://susu-circle-git-preview-branch.vercel.app",
+      (err, allowed) =>
+        err || !allowed
+          ? reject(err || new Error("Expected preview allowed"))
+          : resolve(),
     );
   });
   await new Promise((resolve, reject) => {

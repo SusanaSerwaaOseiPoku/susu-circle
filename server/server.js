@@ -39,12 +39,28 @@ export function getHealthPayload() {
   };
 }
 
+function normalizeOrigin(origin) {
+  return origin.trim().replace(/\/+$/, "");
+}
+
+function originMatchesRule(origin, rule) {
+  const cleanOrigin = normalizeOrigin(origin);
+  const cleanRule = normalizeOrigin(rule);
+  if (!cleanRule.includes("*")) {
+    return cleanOrigin === cleanRule;
+  }
+  const escaped = cleanRule
+    .replace(/[.+?^${}()|[\]\\]/g, "\\$&")
+    .replace(/\*/g, "[^/]+");
+  return new RegExp(`^${escaped}$`).test(cleanOrigin);
+}
+
 export function getCorsOptions(clientUrl = process.env.CLIENT_URL) {
-  const allowedOrigins =
+  const allowedRules =
     typeof clientUrl === "string"
       ? clientUrl
           .split(",")
-          .map((origin) => origin.trim())
+          .map((origin) => normalizeOrigin(origin))
           .filter(Boolean)
       : [];
 
@@ -52,8 +68,8 @@ export function getCorsOptions(clientUrl = process.env.CLIENT_URL) {
     origin(origin, callback) {
       if (
         !origin ||
-        allowedOrigins.length === 0 ||
-        allowedOrigins.includes(origin)
+        allowedRules.length === 0 ||
+        allowedRules.some((rule) => originMatchesRule(origin, rule))
       ) {
         return callback(null, true);
       }
