@@ -57,3 +57,28 @@ This log records AI-assisted work combining the Susu Circle React frontend and E
 - Allow Render's outbound IPs (or `0.0.0.0/0`) in MongoDB Atlas Network Access so Render can connect to `susu-prod`.
 - Seed `susu-prod` once with `npm run seed`, verify `GET <live-url>/health` shows `connected` + `susu-prod`, and run the register/login/create-group/add-contribution flow in Thunder Client against the live Render URL.
 - Paste my live Render URL into `README.md` and capture screenshots of `/health` and Render logs (hiding all secrets).
+
+---
+
+## Week 19 — Live, End to End (Vercel Frontend + Render API)
+
+### What AI helped create or change
+
+- Added `client/vercel.json` with SPA rewrites (`/(.*) -> /index.html`) so refreshing any React Router route on Vercel never returns 404.
+- Enhanced `getCorsOptions` in `server/server.js` to normalize trailing slashes and accept comma-separated production + Vercel preview origins (including scoped wildcard patterns like `https://susu-circle-*.vercel.app`) from `CLIENT_URL`, with zero hardcoded URLs.
+- Updated `client/.env.example` and `server/.env.example` with Vercel/Render production and preview URL guidance.
+- Expanded `server/test/api.test.js` to verify CORS allows production Vercel origins and preview branch origins while blocking unrelated origins.
+- Updated `README.md` with Vercel deployment settings (`Root Directory: client`), preview-branch CORS workflow, **How to Roll Back**, **Which Side to Check First When It Breaks**, and both the **Week 18** and **Week 19** checklists.
+
+### What was checked during development
+
+- `client`: `npm test` (8/8 passing) and `npm run build` (clean Vite build).
+- Audited `client/src/` and `server/` source files to confirm zero `localhost` or hardcoded `http://` URLs.
+- `server`: `npm test` (4/4 passing, including production + preview CORS checks).
+
+### What I still need to check myself
+
+- Create the Vercel project with Root Directory `client`, Build Command `npm run build`, Output Directory `dist`, and `VITE_API_URL` pointing to my live Render API.
+- Set `CLIENT_URL` on Render to my Vercel production URL and my preview branch URL, then verify CORS works on both.
+- Push a branch for at least one Vercel Preview Deployment and confirm login + API requests succeed on it.
+- Run the full 6-step Week 17 demo on my phone over mobile data, record the 2-minute screen recording, and paste my live Vercel + Render URLs and app screenshot into `README.md`.
