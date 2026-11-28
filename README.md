@@ -315,3 +315,16 @@ cd client
 npm test
 npm run build
 ```
+
+### Linting & Formatting (`server/`)
+
+```sh
+cd server
+npm run lint
+npm run format:check
+npm run format
+```
+
+- **ESLint** (`server/eslint.config.js`) enforces clean modern JS rules, zero unused variables, strict equality (`===`), and disallows `console.log` (`no-console`).
+- **Prettier** (`server/.prettierrc` + `server/.prettierignore`) keeps code formatting uniform across all server source and test files.
+- See [CODE_REVIEW.md](./CODE_REVIEW.md) for the peer code review template and response log.

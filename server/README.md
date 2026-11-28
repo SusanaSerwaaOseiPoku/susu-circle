@@ -116,3 +116,16 @@ npm test
   `test/auth.test.js` (5 auth tests), and `test/groups-contributions.test.js`
   (10 integration & failure tests: `400` validation, `401` unauthenticated,
   `403` non-owner, `400` bad ID, `404` missing group).
+
+## Lint & Format (`eslint` + `prettier`)
+
+```sh
+npm run lint
+npm run format:check
+npm run format
+```
+
+- `eslint.config.js` enforces strict equality, no unused variables, and no
+  `console.log` calls (`no-console`).
+- `.prettierrc` and `.prettierignore` keep formatting consistent across all
+  source and test files.

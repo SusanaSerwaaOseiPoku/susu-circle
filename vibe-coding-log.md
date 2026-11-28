@@ -105,3 +105,30 @@ This log records AI-assisted work combining the Susu Circle React frontend and E
 
 - Intentionally break one assertion or route rule locally, watch `npm test` fail red, fix it back, and watch all 20 tests pass green.
 - Verify my live Render service still starts and passes `GET /health` after pushing the `app.js` / `server.js` split.
+
+---
+
+## Susu Circle API: Clean, Linted, Reviewed (`eslint` + `prettier` + 5 Refactor Commits)
+
+### What AI helped create or change
+
+- Installed **Prettier** (`prettier`) and **ESLint** (`eslint`, `@eslint/js`, `globals`, `eslint-config-prettier`) in `server/` with `format`, `format:check`, and `lint` scripts plus `.prettierrc`, `.prettierignore`, and `eslint.config.js` (`6dddc1b`).
+- Made one standalone formatting commit named **`Format code`** (`fbda66c`) with zero logic changes.
+- Completed **5 separate refactor commits** covering all 5 smells, keeping `npm run lint`, `npm run format:check`, and all **20/20** `npm test` tests green after every commit:
+  1. **Repeats (`checkId` middleware) (`600ca22`):** Added `server/middleware/checkId.js`, wired it into `routes/groups.js` and `routes/members.js`, and removed duplicated ObjectId checks from `controllers/membersController.js`.
+  2. **Repeats (shared helpers) (`5bd9295`):** Extracted `toPlainObject` and `getTodayIsoDate` into `server/utils/request.js` and `findPopulatedGroupById` in `controllers/groupsController.js`, removing duplicated request-body and date logic across middleware and controllers.
+  3. **Mystery numbers (`e17a1cb`):** Replaced magic numbers with named constants (`DEFAULT_PAGE`, `DEFAULT_PAGE_LIMIT`, `MAX_PAGE_LIMIT`, `INITIAL_ROUND`, `MIN_PASSWORD_LENGTH`, `JWT_EXPIRES_IN`, `MONGO_DUPLICATE_KEY_CODE`, `DB_CONNECTED_READY_STATE`, `BCRYPT_ROUNDS`).
+  4. **Long functions (`35c26ba`):** Split `validateGroupUpdate` (`middleware/validateGroup.js`) into small field parsers and split `seed()` (`seed.js`) into a reusable `seedCircleWithMembers` helper.
+  5. **Names & leftovers (`e0fb0f5`):** Clarified variable/function names in `middleware/findGroup.js` (`extractGroupId`, `groupId`, `createGroupLookupMiddleware`) and `middleware/requireAuth.js` (`authorizationHeader`, `bearerTokenMatch`, `tokenPayload`), removed all `console.log` calls across `server/`, and enabled ESLint's `no-console` rule.
+- Added [CODE_REVIEW.md](./CODE_REVIEW.md) template for the classmate review and response log, and documented lint/format commands in `README.md` and `server/README.md`.
+
+### What was checked during development
+
+- `server`: `npm run lint` (0 errors), `npm run format:check` (all files pass Prettier), and `npm test` (20/20 Vitest tests green after every refactor commit).
+- Verified zero `console.log` calls across `server/` and `client/src/`, and confirmed `.env` files remain untracked/ignored.
+
+### What I still need to check myself
+
+- Review a classmate's GitHub repository and fill in **Part 1** of `CODE_REVIEW.md` with 5+ kind, specific, file-and-line comments labelled `must fix` or `nice to have`.
+- Read the review comments I receive from my classmate, reply calmly in **Part 2** of `CODE_REVIEW.md`, and commit any requested fixes (with `npm run lint` and `npm test` green).
+- Capture a screenshot showing both `npm run lint` and `npm test` passing cleanly in `server/`.
