@@ -10,6 +10,9 @@
     "dev": "node --watch server.js",
     "start": "node server.js",
     "seed": "node seed.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -22,6 +25,11 @@
     "mongoose": "^9.4.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.16.0",
+    "eslint-config-prettier": "^10.1.9",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
     "supertest": "^7.3.2",
     "vitest": "^5.1.2"
   }
