@@ -34,10 +34,6 @@ export const createMember = asyncHandler(async (request, response) => {
 });
 
 export const updateMember = asyncHandler(async (request, response, next) => {
-  if (!mongoose.isValidObjectId(request.params.id)) {
-    return next(createHttpError(400, "Invalid member ID."));
-  }
-
   const member = await Member.findById(request.params.id);
   if (!member) {
     return next(createHttpError(404, "Member not found."));
@@ -62,10 +58,6 @@ export const updateMember = asyncHandler(async (request, response, next) => {
 });
 
 export const deleteMember = asyncHandler(async (request, response, next) => {
-  if (!mongoose.isValidObjectId(request.params.id)) {
-    return next(createHttpError(400, "Invalid member ID."));
-  }
-
   const deleted = await Member.findByIdAndDelete(request.params.id);
   if (!deleted) {
     return next(createHttpError(404, "Member not found."));
