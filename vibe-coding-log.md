@@ -82,3 +82,26 @@ This log records AI-assisted work combining the Susu Circle React frontend and E
 - Set `CLIENT_URL` on Render to my Vercel production URL and my preview branch URL, then verify CORS works on both.
 - Push a branch for at least one Vercel Preview Deployment and confirm login + API requests succeed on it.
 - Run the full 6-step Week 17 demo on my phone over mobile data, record the 2-minute screen recording, and paste my live Vercel + Render URLs and app screenshot into `README.md`.
+
+---
+
+## Susu Circle API: Real Test Suite (`vitest` + `supertest`)
+
+### What AI helped create or change
+
+- Split `server/app.js` cleanly from `server/server.js` so Supertest tests import `app` directly while `npm start` on Render still calls `connectDB()` and serves `/health`.
+- Extracted pure function `calculateContributionTotal()` into `server/utils/contributions.js` and used it inside `controllers/groupsController.js`.
+- Installed `vitest` and `supertest`, updated `server/package.json` (`"test": "vitest run"`), and added `server/vitest.config.js`.
+- Added `MONGO_URI_TEST` (`susu-test`) to `server/.env.example` and created `server/test/setup.js` with a `-test` database-name safety guard and `afterEach` cleanup emptying every collection after each test.
+- Added `getToken()` helper in `server/test/helpers.js` and 20 Arrange-Act-Assert tests across `test/contributions.unit.test.js`, `test/auth.test.js`, and `test/groups-contributions.test.js`.
+- Updated `README.md` and `server/README.md` with how to run the tests and what all 20 tests cover.
+
+### What was checked during development
+
+- `server`: `npm test` (20/20 Vitest tests passing against real Mongoose + `susu-test`).
+- `client`: `npm test` (8/8 passing) and `npm run build` (clean Vite build).
+
+### What I still need to check myself
+
+- Intentionally break one assertion or route rule locally, watch `npm test` fail red, fix it back, and watch all 20 tests pass green.
+- Verify my live Render service still starts and passes `GET /health` after pushing the `app.js` / `server.js` split.

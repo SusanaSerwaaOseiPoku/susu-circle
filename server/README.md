@@ -99,8 +99,20 @@ Protected routes require `Authorization: Bearer <token>`.
 | `GET` | `/contributions` | **Public** | Optional `?group=` / `?groupId=` filter; populates `member` and `group` |
 | `POST` | `/contributions` | **Protected** (`requireAuth`) | Saves `group` and `member` refs and marks member paid |
 
-## Test
+## Test (`vitest` + `supertest`)
+
+`app.js` is split from `server.js` so Supertest can test Express without
+binding a live port while `npm start` continues starting Render cleanly.
 
 ```sh
 npm test
 ```
+
+- Uses `vitest.config.js` + `test/setup.js` against a `susu-test` database
+  (`MONGO_URI_TEST` in `.env.example`, with a `-test` suffix safety guard and
+  automatic in-memory `susu-test` fallback). Every collection is emptied after
+  each test.
+- Covers **20 tests** across `test/contributions.unit.test.js` (5 unit tests),
+  `test/auth.test.js` (5 auth tests), and `test/groups-contributions.test.js`
+  (10 integration & failure tests: `400` validation, `401` unauthenticated,
+  `403` non-owner, `400` bad ID, `404` missing group).

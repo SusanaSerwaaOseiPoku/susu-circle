@@ -267,10 +267,51 @@ Follow this order from the server outward so you find the broken layer fast:
 
 ## Tests & Production Build
 
-```sh
-# Server tests
-cd server && npm test
+### Running the Server Test Suite (`vitest` + `supertest`)
 
-# Client tests & build
-cd client && npm test && npm run build
+```sh
+cd server
+npm test
+```
+
+The API test suite uses **Vitest** and **Supertest** against Express exported
+from `server/app.js` (split cleanly from `server/server.js`, so Render's
+`npm start` and `/health` stay unchanged).
+
+- **Isolated `susu-test` database (`server/test/setup.js`):**
+  - If `MONGO_URI_TEST` is set in `server/.env`, the suite refuses to start
+    unless the database name ends in **`-test`** (e.g., `susu-test`), so real
+    `susu-dev` or `susu-prod` data can never be touched.
+  - If `MONGO_URI_TEST` is left as a placeholder locally, `setup.js` starts an
+    isolated in-memory MongoDB server named `susu-test` automatically.
+  - Every collection in `susu-test` is emptied in `afterEach`, keeping tests
+    independent.
+- **Shared auth helper (`server/test/helpers.js`):** Every authenticated test
+  uses `getToken()` to register/log in and attach a Bearer token.
+
+#### What the 20 Server Tests Cover
+
+- **Pure unit tests (`server/test/contributions.unit.test.js` — 5 tests):**
+  `calculateContributionTotal` edge cases (empty array, positive totals,
+  floating-point decimals `10.1 + 20.2 = 30.3`, invalid/negative/non-array
+  inputs) and `getCorsOptions` (production + Vercel preview URLs vs blocked
+  origins).
+- **Auth tests (`server/test/auth.test.js` — 5 tests):**
+  `POST /auth/register` password hashing & token (`201`), repeated email
+  rejection (`409`), `POST /auth/login` token (`200`), wrong password / unknown
+  email (`401`), and `GET /auth/me` (`200` without secrets / `401` unauth).
+- **Groups, members, contributions & failure tests (`server/test/groups-contributions.test.js` — 10 tests):**
+  `GET /health` connected DB status, `POST /groups` with owner link, public
+  `GET /groups` populate/search/sort/pagination, `GET /groups/mine` (`200`/`401`),
+  creating members & contributions with populated payer names and server
+  `totalSaved`, plus failure paths: unauthenticated writes (`401`), validation
+  errors (`400`), non-owner `PATCH`/`DELETE` (`403`), invalid ObjectId (`400`),
+  and missing group ObjectId (`404`).
+
+### Running Client Tests & Production Build
+
+```sh
+cd client
+npm test
+npm run build
 ```
