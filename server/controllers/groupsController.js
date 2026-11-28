@@ -2,6 +2,7 @@ import asyncHandler from "../middleware/asyncHandler.js";
 import Contribution from "../models/Contribution.js";
 import Group from "../models/Group.js";
 import Member from "../models/Member.js";
+import { calculateContributionTotal } from "../utils/contributions.js";
 
 const SORT_OPTIONS = {
   newest: { createdAt: -1 },
@@ -100,10 +101,7 @@ export const listGroupContributions = asyncHandler(
       .populate("member", "name paid")
       .sort({ createdAt: -1 });
 
-    const totalSaved = contributions.reduce(
-      (sum, entry) => sum + Number(entry.amount || 0),
-      0,
-    );
+    const totalSaved = calculateContributionTotal(contributions);
 
     response.json({
       group: request.group,
