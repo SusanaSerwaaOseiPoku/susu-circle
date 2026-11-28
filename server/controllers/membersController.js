@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import asyncHandler from "../middleware/asyncHandler.js";
 import { createHttpError } from "../middleware/errors.js";
 import Member from "../models/Member.js";
+import { toPlainObject } from "../utils/request.js";
 
 export const listMembers = asyncHandler(async (request, response) => {
   const filter = request.group ? { group: request.group._id } : {};
@@ -39,12 +40,7 @@ export const updateMember = asyncHandler(async (request, response, next) => {
     return next(createHttpError(404, "Member not found."));
   }
 
-  const body =
-    request.body !== null &&
-    typeof request.body === "object" &&
-    !Array.isArray(request.body)
-      ? request.body
-      : {};
+  const body = toPlainObject(request.body);
   if (typeof body.paid === "boolean") {
     member.paid = body.paid;
   } else if (body.status === "paid" || body.status === "pending") {

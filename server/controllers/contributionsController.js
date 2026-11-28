@@ -1,5 +1,6 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Contribution from "../models/Contribution.js";
+import { getTodayIsoDate, toPlainObject } from "../utils/request.js";
 
 export const listContributions = asyncHandler(async (request, response) => {
   const filter = request.group ? { group: request.group._id } : {};
@@ -11,7 +12,7 @@ export const listContributions = asyncHandler(async (request, response) => {
 });
 
 export const createContribution = asyncHandler(async (request, response) => {
-  const body = request.body || {};
+  const body = toPlainObject(request.body);
   const created = await Contribution.create({
     group: request.group._id,
     member: request.member._id,
@@ -19,7 +20,7 @@ export const createContribution = asyncHandler(async (request, response) => {
     date:
       typeof body.date === "string" && body.date.trim()
         ? body.date.trim()
-        : new Date().toISOString().slice(0, 10),
+        : getTodayIsoDate(),
     round:
       Number(body.round) > 0 ? Number(body.round) : request.group.currentRound,
   });

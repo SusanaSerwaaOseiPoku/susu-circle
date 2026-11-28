@@ -1,15 +1,10 @@
+import { toPlainObject } from "../utils/request.js";
 import { createHttpError } from "./errors.js";
 
 const VALID_FREQUENCIES = new Set(["weekly", "monthly"]);
 
-function normalizeBody(body) {
-  return body !== null && typeof body === "object" && !Array.isArray(body)
-    ? body
-    : {};
-}
-
 export default function validateGroup(request, _response, next) {
-  const body = normalizeBody(request.body);
+  const body = toPlainObject(request.body);
   const name = typeof body.name === "string" ? body.name.trim() : "";
   if (!name) {
     return next(createHttpError(400, "Group name is required."));
@@ -27,7 +22,7 @@ export default function validateGroup(request, _response, next) {
 }
 
 export function validateGroupUpdate(request, _response, next) {
-  const body = normalizeBody(request.body);
+  const body = toPlainObject(request.body);
   const updates = {};
 
   if (body.name !== undefined) {

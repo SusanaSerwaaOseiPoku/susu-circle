@@ -3,6 +3,13 @@ import Contribution from "../models/Contribution.js";
 import Group from "../models/Group.js";
 import Member from "../models/Member.js";
 import { calculateContributionTotal } from "../utils/contributions.js";
+import { getTodayIsoDate } from "../utils/request.js";
+
+function findPopulatedGroupById(groupId) {
+  return Group.findById(groupId)
+    .populate("owner", "email")
+    .populate("memberCount");
+}
 
 const SORT_OPTIONS = {
   newest: { createdAt: -1 },
@@ -117,15 +124,12 @@ export const createGroup = asyncHandler(async (request, response) => {
     name: body.name,
     contributionAmount: body.contributionAmount,
     frequency: body.frequency || "weekly",
-    startDate: body.startDate || new Date().toISOString().slice(0, 10),
+    startDate: body.startDate || getTodayIsoDate(),
     currentRound: Number(body.currentRound) > 0 ? Number(body.currentRound) : 1,
     owner: request.user.id,
   });
 
-  const populated = await Group.findById(created._id)
-    .populate("owner", "email")
-    .populate("memberCount");
-
+  const populated = await findPopulatedGroupById(created._id);
   response.status(201).json(populated || created);
 });
 
@@ -133,10 +137,7 @@ export const updateGroup = asyncHandler(async (request, response) => {
   Object.assign(request.group, request.validatedGroupUpdate);
   await request.group.save();
 
-  const populated = await Group.findById(request.group._id)
-    .populate("owner", "email")
-    .populate("memberCount");
-
+  const populated = await findPopulatedGroupById(request.group._id);
   response.json(populated || request.group);
 });
 

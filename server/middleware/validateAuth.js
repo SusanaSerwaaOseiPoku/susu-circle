@@ -1,15 +1,10 @@
+import { toPlainObject } from "../utils/request.js";
 import { createHttpError } from "./errors.js";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function normalizeBody(body) {
-  return body !== null && typeof body === "object" && !Array.isArray(body)
-    ? body
-    : {};
-}
-
 export function validateRegister(request, _response, next) {
-  const body = normalizeBody(request.body);
+  const body = toPlainObject(request.body);
   const email =
     typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body.password === "string" ? body.password : "";
@@ -33,7 +28,7 @@ export function validateRegister(request, _response, next) {
 }
 
 export function validateLogin(request, _response, next) {
-  const body = normalizeBody(request.body);
+  const body = toPlainObject(request.body);
   const email =
     typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body.password === "string" ? body.password : "";
