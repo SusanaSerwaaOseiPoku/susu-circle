@@ -8,6 +8,10 @@ import contributionsRouter from "./routes/contributions.js";
 import groupsRouter from "./routes/groups.js";
 import membersRouter from "./routes/members.js";
 
+const DB_CONNECTED_READY_STATE = 1;
+const HTTP_OK = 200;
+const HTTP_SERVICE_UNAVAILABLE = 503;
+
 const DB_READY_STATES = {
   0: "disconnected",
   1: "connected",
@@ -18,10 +22,10 @@ const DB_READY_STATES = {
 export function getHealthPayload() {
   const readyState = mongoose.connection.readyState;
   const dbStatus = DB_READY_STATES[readyState] || "unknown";
-  const connected = readyState === 1;
+  const connected = readyState === DB_CONNECTED_READY_STATE;
 
   return {
-    httpStatus: connected ? 200 : 503,
+    httpStatus: connected ? HTTP_OK : HTTP_SERVICE_UNAVAILABLE,
     body: {
       status: connected ? "ok" : "degraded",
       database: {

@@ -6,6 +6,7 @@ import { getJwtSecret } from "../middleware/requireAuth.js";
 import User from "../models/User.js";
 
 const BCRYPT_ROUNDS = 10;
+const JWT_EXPIRES_IN = "2h";
 
 function toPublicUser(user) {
   return {
@@ -24,7 +25,7 @@ function issueToken(user) {
       name: user.name,
     },
     getJwtSecret(),
-    { expiresIn: "2h" },
+    { expiresIn: JWT_EXPIRES_IN },
   );
 }
 

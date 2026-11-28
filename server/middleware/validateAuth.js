@@ -2,6 +2,7 @@ import { toPlainObject } from "../utils/request.js";
 import { createHttpError } from "./errors.js";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 6;
 
 export function validateRegister(request, _response, next) {
   const body = toPlainObject(request.body);
@@ -13,9 +14,12 @@ export function validateRegister(request, _response, next) {
   if (!EMAIL_PATTERN.test(email)) {
     return next(createHttpError(400, "A valid email address is required."));
   }
-  if (password.length < 6) {
+  if (password.length < MIN_PASSWORD_LENGTH) {
     return next(
-      createHttpError(400, "Password must be at least 6 characters."),
+      createHttpError(
+        400,
+        `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
+      ),
     );
   }
 

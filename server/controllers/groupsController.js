@@ -11,6 +11,13 @@ function findPopulatedGroupById(groupId) {
     .populate("memberCount");
 }
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_LIMIT = 6;
+const MAX_PAGE_LIMIT = 50;
+const INITIAL_ROUND = 1;
+const DEFAULT_FREQUENCY = "weekly";
+const DECIMAL_RADIX = 10;
+
 const SORT_OPTIONS = {
   newest: { createdAt: -1 },
   oldest: { createdAt: 1 },
@@ -39,14 +46,15 @@ function parseGroupQuery(query, baseFilter = {}) {
   const rawSort = typeof query.sort === "string" ? query.sort.trim() : "newest";
   const sortSpec = SORT_OPTIONS[rawSort] || SORT_OPTIONS.newest;
 
-  const parsedPage = Number.parseInt(query.page, 10);
-  const page = Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+  const parsedPage = Number.parseInt(query.page, DECIMAL_RADIX);
+  const page =
+    Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : DEFAULT_PAGE;
 
-  const parsedLimit = Number.parseInt(query.limit, 10);
+  const parsedLimit = Number.parseInt(query.limit, DECIMAL_RADIX);
   const limit =
     Number.isInteger(parsedLimit) && parsedLimit > 0
-      ? Math.min(parsedLimit, 50)
-      : 6;
+      ? Math.min(parsedLimit, MAX_PAGE_LIMIT)
+      : DEFAULT_PAGE_LIMIT;
 
   return { filter, sortSpec, page, limit };
 }
@@ -123,9 +131,10 @@ export const createGroup = asyncHandler(async (request, response) => {
   const created = await Group.create({
     name: body.name,
     contributionAmount: body.contributionAmount,
-    frequency: body.frequency || "weekly",
+    frequency: body.frequency || DEFAULT_FREQUENCY,
     startDate: body.startDate || getTodayIsoDate(),
-    currentRound: Number(body.currentRound) > 0 ? Number(body.currentRound) : 1,
+    currentRound:
+      Number(body.currentRound) > 0 ? Number(body.currentRound) : INITIAL_ROUND,
     owner: request.user.id,
   });
 

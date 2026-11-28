@@ -7,6 +7,8 @@ import Group from "./models/Group.js";
 import Member from "./models/Member.js";
 import User from "./models/User.js";
 
+const BCRYPT_ROUNDS = 10;
+
 const TEST_ACCOUNTS = [
   { name: "Ama Mensah (Demo)", email: "demo@susu.test", password: "susu1234" },
   { name: "Kojo Boateng", email: "kojo@susu.test", password: "susu1234" },
@@ -15,7 +17,7 @@ const TEST_ACCOUNTS = [
 async function ensureUser({ name, email, password }) {
   let user = await User.findOne({ email });
   if (!user) {
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
     user = await User.create({ name, email, passwordHash });
   }
   return user;
