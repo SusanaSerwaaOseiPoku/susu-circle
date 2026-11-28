@@ -14,6 +14,30 @@ const TEST_ACCOUNTS = [
   { name: "Kojo Boateng", email: "kojo@susu.test", password: "susu1234" },
 ];
 
+const SEED_CIRCLES = [
+  {
+    ownerEmail: "demo@susu.test",
+    name: "Market Women Circle",
+    contributionAmount: 50,
+    frequency: "weekly",
+    startDate: "2026-11-01",
+    currentRound: 1,
+    members: [
+      { name: "Ama Mensah", paid: true, initialContributionDate: "2026-11-15" },
+      { name: "Esi Owusu", paid: false },
+    ],
+  },
+  {
+    ownerEmail: "kojo@susu.test",
+    name: "School Friends Circle",
+    contributionAmount: 25,
+    frequency: "monthly",
+    startDate: "2026-11-01",
+    currentRound: 1,
+    members: [{ name: "Kojo Boateng", paid: false }],
+  },
+];
+
 async function ensureUser({ name, email, password }) {
   let user = await User.findOne({ email });
   if (!user) {
@@ -23,68 +47,57 @@ async function ensureUser({ name, email, password }) {
   return user;
 }
 
+async function seedCircleWithMembers(owner, circleSeed) {
+  const existingGroup = await Group.findOne({
+    name: circleSeed.name,
+    owner: owner._id,
+  });
+  if (existingGroup) {
+    return existingGroup;
+  }
+
+  const group = await Group.create({
+    name: circleSeed.name,
+    contributionAmount: circleSeed.contributionAmount,
+    frequency: circleSeed.frequency,
+    startDate: circleSeed.startDate,
+    currentRound: circleSeed.currentRound,
+    owner: owner._id,
+  });
+
+  for (const memberSeed of circleSeed.members) {
+    const member = await Member.create({
+      group: group._id,
+      user: owner._id,
+      name: memberSeed.name,
+      paid: memberSeed.paid,
+    });
+
+    if (memberSeed.initialContributionDate) {
+      await Contribution.create({
+        group: group._id,
+        member: member._id,
+        amount: circleSeed.contributionAmount,
+        date: memberSeed.initialContributionDate,
+        round: circleSeed.currentRound,
+      });
+    }
+  }
+
+  return group;
+}
+
 async function seed() {
   await connectDB();
 
-  const [demoUser, kojoUser] = await Promise.all(
+  const users = await Promise.all(
     TEST_ACCOUNTS.map((account) => ensureUser(account)),
   );
+  const usersByEmail = new Map(users.map((user) => [user.email, user]));
 
-  let marketGroup = await Group.findOne({
-    name: "Market Women Circle",
-    owner: demoUser._id,
-  });
-  if (!marketGroup) {
-    marketGroup = await Group.create({
-      name: "Market Women Circle",
-      contributionAmount: 50,
-      frequency: "weekly",
-      startDate: "2026-11-01",
-      currentRound: 1,
-      owner: demoUser._id,
-    });
-
-    const ama = await Member.create({
-      group: marketGroup._id,
-      user: demoUser._id,
-      name: "Ama Mensah",
-      paid: true,
-    });
-    await Member.create({
-      group: marketGroup._id,
-      user: demoUser._id,
-      name: "Esi Owusu",
-      paid: false,
-    });
-    await Contribution.create({
-      group: marketGroup._id,
-      member: ama._id,
-      amount: 50,
-      date: "2026-11-15",
-      round: 1,
-    });
-  }
-
-  let schoolGroup = await Group.findOne({
-    name: "School Friends Circle",
-    owner: kojoUser._id,
-  });
-  if (!schoolGroup) {
-    schoolGroup = await Group.create({
-      name: "School Friends Circle",
-      contributionAmount: 25,
-      frequency: "monthly",
-      startDate: "2026-11-01",
-      currentRound: 1,
-      owner: kojoUser._id,
-    });
-
-    await Member.create({
-      group: schoolGroup._id,
-      user: kojoUser._id,
-      name: "Kojo Boateng",
-      paid: false,
-    });
+  for (const circleSeed of SEED_CIRCLES) {
+    const owner = usersByEmail.get(circleSeed.ownerEmail);
+    await seedCircleWithMembers(owner, circleSeed);
   }
 
   console.log(

@@ -3,81 +3,86 @@ import { createHttpError } from "./errors.js";
 
 const VALID_FREQUENCIES = new Set(["weekly", "monthly"]);
 
-export default function validateGroup(request, _response, next) {
-  const body = toPlainObject(request.body);
-  const name = typeof body.name === "string" ? body.name.trim() : "";
+function parseGroupName(value, errorMessage) {
+  const name = typeof value === "string" ? value.trim() : "";
   if (!name) {
-    return next(createHttpError(400, "Group name is required."));
+    throw createHttpError(400, errorMessage);
   }
+  return name;
+}
 
-  const contributionAmount = Number(body.contributionAmount);
+function parseContributionAmount(value) {
+  const contributionAmount = Number(value);
   if (!Number.isFinite(contributionAmount) || contributionAmount <= 0) {
-    return next(
-      createHttpError(400, "Contribution amount must be greater than 0."),
-    );
+    throw createHttpError(400, "Contribution amount must be greater than 0.");
   }
+  return contributionAmount;
+}
 
-  request.validatedGroup = { ...body, name, contributionAmount };
-  next();
+function parseFrequency(value) {
+  if (typeof value !== "string" || !VALID_FREQUENCIES.has(value)) {
+    throw createHttpError(400, "Frequency must be weekly or monthly.");
+  }
+  return value;
+}
+
+function parseStartDate(value) {
+  const startDate = typeof value === "string" ? value.trim() : "";
+  if (!startDate) {
+    throw createHttpError(400, "Start date must be a non-empty string.");
+  }
+  return startDate;
+}
+
+function parseCurrentRound(value) {
+  const currentRound = Number(value);
+  if (!Number.isInteger(currentRound) || currentRound <= 0) {
+    throw createHttpError(400, "Current round must be a positive integer.");
+  }
+  return currentRound;
+}
+
+const GROUP_UPDATE_PARSERS = {
+  name: (value) => parseGroupName(value, "Group name cannot be empty."),
+  contributionAmount: parseContributionAmount,
+  frequency: parseFrequency,
+  startDate: parseStartDate,
+  currentRound: parseCurrentRound,
+};
+
+export default function validateGroup(request, _response, next) {
+  try {
+    const body = toPlainObject(request.body);
+    const name = parseGroupName(body.name, "Group name is required.");
+    const contributionAmount = parseContributionAmount(body.contributionAmount);
+
+    request.validatedGroup = { ...body, name, contributionAmount };
+    return next();
+  } catch (error) {
+    return next(error);
+  }
 }
 
 export function validateGroupUpdate(request, _response, next) {
-  const body = toPlainObject(request.body);
-  const updates = {};
+  try {
+    const body = toPlainObject(request.body);
+    const updates = {};
 
-  if (body.name !== undefined) {
-    const name = typeof body.name === "string" ? body.name.trim() : "";
-    if (!name) {
-      return next(createHttpError(400, "Group name cannot be empty."));
+    for (const [field, parseField] of Object.entries(GROUP_UPDATE_PARSERS)) {
+      if (body[field] !== undefined) {
+        updates[field] = parseField(body[field]);
+      }
     }
-    updates.name = name;
-  }
 
-  if (body.contributionAmount !== undefined) {
-    const contributionAmount = Number(body.contributionAmount);
-    if (!Number.isFinite(contributionAmount) || contributionAmount <= 0) {
+    if (Object.keys(updates).length === 0) {
       return next(
-        createHttpError(400, "Contribution amount must be greater than 0."),
+        createHttpError(400, "Provide at least one field to update."),
       );
     }
-    updates.contributionAmount = contributionAmount;
-  }
 
-  if (body.frequency !== undefined) {
-    if (
-      typeof body.frequency !== "string" ||
-      !VALID_FREQUENCIES.has(body.frequency)
-    ) {
-      return next(createHttpError(400, "Frequency must be weekly or monthly."));
-    }
-    updates.frequency = body.frequency;
+    request.validatedGroupUpdate = updates;
+    return next();
+  } catch (error) {
+    return next(error);
   }
-
-  if (body.startDate !== undefined) {
-    const startDate =
-      typeof body.startDate === "string" ? body.startDate.trim() : "";
-    if (!startDate) {
-      return next(
-        createHttpError(400, "Start date must be a non-empty string."),
-      );
-    }
-    updates.startDate = startDate;
-  }
-
-  if (body.currentRound !== undefined) {
-    const currentRound = Number(body.currentRound);
-    if (!Number.isInteger(currentRound) || currentRound <= 0) {
-      return next(
-        createHttpError(400, "Current round must be a positive integer."),
-      );
-    }
-    updates.currentRound = currentRound;
-  }
-
-  if (Object.keys(updates).length === 0) {
-    return next(createHttpError(400, "Provide at least one field to update."));
-  }
-
-  request.validatedGroupUpdate = updates;
-  next();
 }
