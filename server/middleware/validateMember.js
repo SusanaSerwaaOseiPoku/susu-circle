@@ -2,7 +2,9 @@ import { createHttpError } from "./errors.js";
 
 export default function validateMember(request, _response, next) {
   const body =
-    request.body !== null && typeof request.body === "object" && !Array.isArray(request.body)
+    request.body !== null &&
+    typeof request.body === "object" &&
+    !Array.isArray(request.body)
       ? request.body
       : {};
   const name = typeof body.name === "string" ? body.name.trim() : "";

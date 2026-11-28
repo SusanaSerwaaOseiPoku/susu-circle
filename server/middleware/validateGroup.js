@@ -49,16 +49,22 @@ export function validateGroupUpdate(request, _response, next) {
   }
 
   if (body.frequency !== undefined) {
-    if (typeof body.frequency !== "string" || !VALID_FREQUENCIES.has(body.frequency)) {
+    if (
+      typeof body.frequency !== "string" ||
+      !VALID_FREQUENCIES.has(body.frequency)
+    ) {
       return next(createHttpError(400, "Frequency must be weekly or monthly."));
     }
     updates.frequency = body.frequency;
   }
 
   if (body.startDate !== undefined) {
-    const startDate = typeof body.startDate === "string" ? body.startDate.trim() : "";
+    const startDate =
+      typeof body.startDate === "string" ? body.startDate.trim() : "";
     if (!startDate) {
-      return next(createHttpError(400, "Start date must be a non-empty string."));
+      return next(
+        createHttpError(400, "Start date must be a non-empty string."),
+      );
     }
     updates.startDate = startDate;
   }
@@ -66,7 +72,9 @@ export function validateGroupUpdate(request, _response, next) {
   if (body.currentRound !== undefined) {
     const currentRound = Number(body.currentRound);
     if (!Number.isInteger(currentRound) || currentRound <= 0) {
-      return next(createHttpError(400, "Current round must be a positive integer."));
+      return next(
+        createHttpError(400, "Current round must be a positive integer."),
+      );
     }
     updates.currentRound = currentRound;
   }

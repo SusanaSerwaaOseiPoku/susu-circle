@@ -9,13 +9,18 @@ export default function checkOwner(request, _response, next) {
   }
 
   const ownerId =
-    request.group.owner && typeof request.group.owner === "object" && "_id" in request.group.owner
+    request.group.owner &&
+    typeof request.group.owner === "object" &&
+    "_id" in request.group.owner
       ? request.group.owner._id
       : request.group.owner;
 
   if (String(ownerId) !== String(request.user.id)) {
     return next(
-      createHttpError(403, "Only the group owner can update or delete this group."),
+      createHttpError(
+        403,
+        "Only the group owner can update or delete this group.",
+      ),
     );
   }
 

@@ -12,7 +12,9 @@ import {
 import checkOwner from "../middleware/checkOwner.js";
 import findGroup from "../middleware/findGroup.js";
 import requireAuth from "../middleware/requireAuth.js";
-import validateGroup, { validateGroupUpdate } from "../middleware/validateGroup.js";
+import validateGroup, {
+  validateGroupUpdate,
+} from "../middleware/validateGroup.js";
 
 const router = Router();
 

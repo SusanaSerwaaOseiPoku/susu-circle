@@ -11,7 +11,8 @@ export function getJwtSecret() {
 
 export default function requireAuth(request, _response, next) {
   const header = request.headers.authorization;
-  const match = typeof header === "string" ? /^Bearer\s+(.+)$/i.exec(header.trim()) : null;
+  const match =
+    typeof header === "string" ? /^Bearer\s+(.+)$/i.exec(header.trim()) : null;
   if (!match) {
     return next(createHttpError(401, "Authentication required."));
   }

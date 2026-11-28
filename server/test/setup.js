@@ -58,13 +58,13 @@ function compareValues(left, right, direction) {
       ? left.getTime()
       : typeof left === "string"
         ? left.toLowerCase()
-        : left ?? 0;
+        : (left ?? 0);
   const b =
     right instanceof Date
       ? right.getTime()
       : typeof right === "string"
         ? right.toLowerCase()
-        : right ?? 0;
+        : (right ?? 0);
   if (a === b) return 0;
   return a < b ? -1 * direction : 1 * direction;
 }

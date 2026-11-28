@@ -5,8 +5,7 @@ export function calculateContributionTotal(contributions) {
 
   let totalCents = 0;
   for (const entry of contributions) {
-    const amount =
-      typeof entry === "number" ? entry : Number(entry?.amount);
+    const amount = typeof entry === "number" ? entry : Number(entry?.amount);
     if (Number.isFinite(amount) && amount > 0) {
       totalCents += Math.round(amount * 100);
     }

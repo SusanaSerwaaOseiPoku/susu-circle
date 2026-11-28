@@ -16,11 +16,7 @@ describe("calculateContributionTotal (pure unit tests)", () => {
 
   it("sums multiple positive contribution amounts accurately", () => {
     // Arrange
-    const contributions = [
-      { amount: 50 },
-      { amount: 75 },
-      { amount: 125 },
-    ];
+    const contributions = [{ amount: 50 }, { amount: 75 }, { amount: 125 }];
 
     // Act
     const total = calculateContributionTotal(contributions);

@@ -10,7 +10,8 @@ function normalizeBody(body) {
 
 export function validateRegister(request, _response, next) {
   const body = normalizeBody(request.body);
-  const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+  const email =
+    typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body.password === "string" ? body.password : "";
   const rawName = typeof body.name === "string" ? body.name.trim() : "";
 
@@ -18,7 +19,9 @@ export function validateRegister(request, _response, next) {
     return next(createHttpError(400, "A valid email address is required."));
   }
   if (password.length < 6) {
-    return next(createHttpError(400, "Password must be at least 6 characters."));
+    return next(
+      createHttpError(400, "Password must be at least 6 characters."),
+    );
   }
 
   request.validatedAuth = {
@@ -31,7 +34,8 @@ export function validateRegister(request, _response, next) {
 
 export function validateLogin(request, _response, next) {
   const body = normalizeBody(request.body);
-  const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+  const email =
+    typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body.password === "string" ? body.password : "";
 
   if (!email || !password) {
