@@ -9,6 +9,6 @@ export default async function connectDB(uri = process.env.MONGO_URI) {
   }
 
   const connection = await mongoose.connect(connectionUri);
-  console.log(`Connected to MongoDB (${connection.connection.host})`);
+  console.info(`Connected to MongoDB (${connection.connection.host})`);
   return connection;
 }

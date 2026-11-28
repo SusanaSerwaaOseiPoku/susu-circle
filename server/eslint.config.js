@@ -24,6 +24,7 @@ export default [
         },
       ],
       eqeqeq: ["error", "always"],
+      "no-console": ["error", { allow: ["info", "warn", "error"] }],
       "no-var": "error",
       "prefer-const": "error",
     },

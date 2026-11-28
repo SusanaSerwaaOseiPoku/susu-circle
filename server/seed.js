@@ -100,7 +100,7 @@ async function seed() {
     await seedCircleWithMembers(owner, circleSeed);
   }
 
-  console.log(
+  console.info(
     `Seed complete in database "${mongoose.connection.name}". Test login: demo@susu.test / susu1234`,
   );
   await mongoose.disconnect();

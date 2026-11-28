@@ -10,7 +10,7 @@ export { app, createApp, getCorsOptions, getHealthPayload };
 export async function startServer() {
   await connectDB();
   return app.listen(PORT, () => {
-    console.log(`Susu Circle API listening on port ${PORT}`);
+    console.info(`Susu Circle API listening on port ${PORT}`);
   });
 }
 

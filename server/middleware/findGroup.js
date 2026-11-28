@@ -3,33 +3,31 @@ import Group from "../models/Group.js";
 import asyncHandler from "./asyncHandler.js";
 import { createHttpError } from "./errors.js";
 
-function createLookupGroup(required) {
-  return asyncHandler(async (request, _response, next) => {
-    let id;
-    if (request.params.id !== undefined) {
-      id = request.params.id;
-    } else if (request.body?.group !== undefined) {
-      id = request.body.group;
-    } else if (request.body?.groupId !== undefined) {
-      id = request.body.groupId;
-    } else if (request.query.group !== undefined) {
-      id = request.query.group;
-    } else if (request.query.groupId !== undefined) {
-      id = request.query.groupId;
-    }
+function extractGroupId(request) {
+  if (request.params.id !== undefined) return request.params.id;
+  if (request.body?.group !== undefined) return request.body.group;
+  if (request.body?.groupId !== undefined) return request.body.groupId;
+  if (request.query.group !== undefined) return request.query.group;
+  if (request.query.groupId !== undefined) return request.query.groupId;
+  return undefined;
+}
 
-    if (id === undefined || id === "") {
-      if (required) {
+function createGroupLookupMiddleware(isRequired) {
+  return asyncHandler(async (request, _response, next) => {
+    const groupId = extractGroupId(request);
+
+    if (groupId === undefined || groupId === "") {
+      if (isRequired) {
         return next(createHttpError(404, "Group not found."));
       }
       return next();
     }
 
-    if (!mongoose.isValidObjectId(id)) {
+    if (!mongoose.isValidObjectId(groupId)) {
       return next(createHttpError(400, "Invalid group ID."));
     }
 
-    const group = await Group.findById(id)
+    const group = await Group.findById(groupId)
       .populate("owner", "email")
       .populate("memberCount");
 
@@ -42,6 +40,6 @@ function createLookupGroup(required) {
   });
 }
 
-const findGroup = createLookupGroup(false);
-export const requireGroup = createLookupGroup(true);
+const findGroup = createGroupLookupMiddleware(false);
+export const requireGroup = createGroupLookupMiddleware(true);
 export default findGroup;
